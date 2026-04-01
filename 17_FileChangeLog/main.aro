@@ -1,0 +1,54 @@
+(* FileChangeLog - Monitor a directory and log all file system events *)
+
+(Application-Start: File Change Log) {
+    (* Get the directory to watch from --dir parameter *)
+    Extract the <dir> from the <parameter: dir>.
+
+    (* Create the log file on disk *)
+    Create the <log-file> with "changelog.log".
+    Create the <header> with "[${<now>}] START Monitoring ${<dir>}".
+    Write the <header> to the <file: log-file>.
+
+    Log "Monitoring ${<dir>} for changes..." to the <console>.
+    Log "Writing events to changelog.log" to the <console>.
+
+    (* Start watching the specified directory *)
+    Start the <file-monitor> with <dir>.
+
+    (* Keep running until Ctrl+C *)
+    Keepalive the <application> for the <events>.
+
+    Return an <OK: status> for the <startup>.
+}
+
+(Log File Created: File Event Handler) {
+    Extract the <path> from the <event: path>.
+    Create the <log-file> with "changelog.log".
+    Create the <entry> with "[${<now>}] CREATED ${<path>}\n".
+    Append the <appended> to the <file: log-file> with <entry>.
+    Log <entry> to the <console>.
+    Return an <OK: status> for the <event>.
+}
+
+(Log File Modified: File Event Handler) {
+    Extract the <path> from the <event: path>.
+    Create the <log-file> with "changelog.log".
+    Create the <entry> with "[${<now>}] MODIFIED ${<path>}\n".
+    Append the <appended> to the <file: log-file> with <entry>.
+    Log <entry> to the <console>.
+    Return an <OK: status> for the <event>.
+}
+
+(Log File Deleted: File Event Handler) {
+    Extract the <path> from the <event: path>.
+    Create the <log-file> with "changelog.log".
+    Create the <entry> with "[${<now>}] DELETED ${<path>}\n".
+    Append the <appended> to the <file: log-file> with <entry>.
+    Log <entry> to the <console>.
+    Return an <OK: status> for the <event>.
+}
+
+(Application-End: Success) {
+    Log "File change log stopped." to the <console>.
+    Return an <OK: status> for the <shutdown>.
+}

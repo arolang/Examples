@@ -22,6 +22,7 @@ A collection of example programs demonstrating [ARO language](https://arolang.gi
 | 14 | RomanNumeralConverter | Convert integers to Roman numerals |
 | 15 | Pi | Approximate Pi using the Leibniz series |
 | 16 | Hangman | Word guessing game with ASCII gallows |
+| 17 | FileChangeLog | Monitor a directory for changes and log events with timestamps |
 
 ## Running
 
