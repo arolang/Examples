@@ -1,0 +1,20 @@
+openapi: 3.0.3
+info:
+  title: Hangman
+  version: 1.0.0
+  description: Terminal Hangman game — schema definitions
+paths: {}
+components:
+  schemas:
+    UIState:
+      type: object
+      properties:
+        key:     { type: string }
+        mode:    { type: string }
+        wrong:   { type: integer }
+        result:  { type: string }
+    Letter:
+      type: object
+      properties:
+        key: { type: integer }
+        ch:  { type: string }

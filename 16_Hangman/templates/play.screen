@@ -1,0 +1,14 @@
+ Hangman  {{ <hint-line> }}
+{{ <style: separatorLine> }}
+
+    ┌───┐
+    │   │
+    {{ <head> }}   │
+   {{ <larm> }}{{ <torso> }}{{ <rarm> }}  │
+   {{ <lleg> }} {{ <rleg> }}  │
+   ─────┘
+
+   {{ <word-display> }}
+
+   {{ <info-line> }}
+{{ <style: separatorLine> }}

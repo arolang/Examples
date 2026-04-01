@@ -1,0 +1,57 @@
+(* Hangman - Terminal word guessing game with ASCII gallows *)
+
+(Application-Start: Hangman) {
+    Clear the <screen> for the <terminal>.
+    Clear the <cursor> for the <terminal>.
+
+    (* Word list with pre-split character arrays *)
+    Create the <word-entries> with [
+        { word: "hangman",   chars: ["h","a","n","g","m","a","n"] },
+        { word: "keyboard",  chars: ["k","e","y","b","o","a","r","d"] },
+        { word: "terminal",  chars: ["t","e","r","m","i","n","a","l"] },
+        { word: "algorithm", chars: ["a","l","g","o","r","i","t","h","m"] },
+        { word: "function",  chars: ["f","u","n","c","t","i","o","n"] },
+        { word: "variable",  chars: ["v","a","r","i","a","b","l","e"] },
+        { word: "compiler",  chars: ["c","o","m","p","i","l","e","r"] },
+        { word: "software",  chars: ["s","o","f","t","w","a","r","e"] }
+    ].
+    Compute the <entry: collections.pick-random> from the <word-entries>.
+    Extract the <word> from the <entry: word>.
+    Extract the <chars> from the <entry: chars>.
+    Compute the <word-len: count> from the <chars>.
+
+    (* Store word and chars *)
+    Create the <secret> with { key: "secret", word: <word> }.
+    Store the <secret> into the <config-repository>.
+
+    (* Store each character in letter-repository *)
+    Create the <idx-state> with { key: "idx", val: 0 }.
+    Store the <idx-state> into the <idx-repository>.
+    for each <ch> in <chars> {
+        Retrieve the <idx> from the <idx-repository> where <key> is "idx".
+        Extract the <i> from the <idx: val>.
+        Create the <letter: Letter> with { key: <i>, ch: <ch> }.
+        Store the <letter> into the <letter-repository>.
+        Compute the <next-i> from <i> + 1.
+        Update the <idx: val> with <next-i>.
+        Store the <idx> into the <idx-repository>.
+    }
+
+    (* Store game data BEFORE state — state triggers observer *)
+    Create the <game> with { key: "game", wordlen: <word-len>, guessed: "" }.
+    Store the <game> into the <game-repository>.
+
+    (* Init game state — triggers observer for first render *)
+    Create the <state: UIState> with { key: "main", mode: "play", wrong: 0, result: "", tick: 0 }.
+    Store the <state> into the <ui-state-repository>.
+
+    Listen the <keyboard> to the <stdin>.
+    Keepalive the <application> for the <events>.
+
+    Return an <OK: status> for the <startup>.
+}
+
+(Application-End: Success) {
+    Show the <cursor> for the <terminal>.
+    Clear the <screen> for the <terminal>.
+}

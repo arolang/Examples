@@ -20,6 +20,8 @@ A collection of example programs demonstrating [ARO language](https://arolang.gi
 | 12 | PrimeNumbers | Sieve of Eratosthenes up to 10000 |
 | 13 | TicTacToe | Interactive tic-tac-toe with unbeatable AI |
 | 14 | RomanNumeralConverter | Convert integers to Roman numerals |
+| 15 | Pi | Approximate Pi using the Leibniz series |
+| 16 | Hangman | Word guessing game with ASCII gallows |
 
 ## Running
 

@@ -1,0 +1,148 @@
+(* ============================================================
+   handlers.aro - Keyboard dispatch and letter guessing
+   ============================================================ *)
+
+(Dispatch Key: KeyPress Handler) {
+    Extract the <pressed-key> from the <event: key>.
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Emit a <KeyDispatched: event> with { key: <pressed-key>, mode: <state: mode> }.
+    Return an <OK: status> for the <dispatch>.
+}
+
+(* ── Quit from any mode ── *)
+
+(Quit Esc: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "escape") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(Quit Q Play: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "q") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(Quit Over Esc: KeyDispatched Handler) where (<event: mode> == "gameover") AND (<event: key> == "escape") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(Quit Over Q: KeyDispatched Handler) where (<event: mode> == "gameover") AND (<event: key> == "q") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(* ── Guess a letter ── *)
+
+(Guess Letter: KeyDispatched Handler) where <event: mode> == "play" {
+    Extract the <pressed-key> from the <event: key>.
+
+    (* Only handle single lowercase letters *)
+    Create the <letters> with ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","r","s","t","u","v","w","x","y","z"].
+    Compute the <valid> from <letters> contains <pressed-key>.
+
+    match <valid> {
+        case true {
+            Retrieve the <game> from the <game-repository> where <key> is "game".
+            Extract the <guessed> from the <game: guessed>.
+
+            (* Check if already guessed — use string contains *)
+            Compute the <already> from <guessed> contains <pressed-key>.
+
+            match <already> {
+                case false {
+                    (* Add to guessed *)
+                    Compute the <new-guessed> from <guessed> ++ <pressed-key>.
+                    Update the <game: guessed> with <new-guessed>.
+                    Store the <game> into the <game-repository>.
+
+                    (* Check if letter is in the word *)
+                    Retrieve the <secret> from the <config-repository> where <key> is "secret".
+                    Extract the <word> from the <secret: word>.
+                    Compute the <hit> from <word> contains <pressed-key>.
+
+                    (* Always update ui-state to trigger re-render — tick ensures change *)
+                    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+                    Compute the <new-tick> from (<state: tick>) + 1.
+                    Update the <state: tick> with <new-tick>.
+
+                    match <hit> {
+                        case false {
+                            (* Wrong guess *)
+                            Compute the <new-wrong> from (<state: wrong>) + 1.
+                            Update the <state: wrong> with <new-wrong>.
+
+                            (* 6 wrong = dead *)
+                            Compute the <dead> from <new-wrong> >= 6.
+                            match <dead> {
+                                case true {
+                                    Update the <state: mode> with "gameover".
+                                    Update the <state: result> with "You lost!".
+                                }
+                                case false { }
+                            }
+                        }
+                        case true { }
+                    }
+
+                    Store the <state> into the <ui-state-repository>.
+
+                    (* Check win after correct guess *)
+                    match <hit> {
+                        case true { Emit a <CheckWin: event> with "check". }
+                        case false { }
+                    }
+                }
+                case true { }
+            }
+        }
+        case false { }
+    }
+
+    Return an <OK: status> for the <guess>.
+}
+
+(* ── Check win condition ── *)
+
+(Check Victory: CheckWin Handler) {
+    Retrieve the <game> from the <game-repository> where <key> is "game".
+    Extract the <guessed> from the <game: guessed>.
+    Extract the <wordlen> from the <game: wordlen>.
+
+    (* Count how many unique word letters have been guessed *)
+    Create the <match-init> with { key: "mc", val: 0 }.
+    Store the <match-init> into the <match-repository>.
+
+    Retrieve the <all-letters> from the <letter-repository>.
+    for each <letter> in <all-letters> {
+        Compute the <found> from <guessed> contains (<letter: ch>).
+        match <found> {
+            case true {
+                Retrieve the <mc> from the <match-repository> where <key> is "mc".
+                Compute the <new-val> from (<mc: val>) + 1.
+                Update the <mc: val> with <new-val>.
+                Store the <mc> into the <match-repository>.
+            }
+            case false { }
+        }
+    }
+
+    Retrieve the <mc-final> from the <match-repository> where <key> is "mc".
+    Compute the <all-found> from (<mc-final: val>) >= <wordlen>.
+    Delete the <old-mc> from the <match-repository>.
+
+    match <all-found> {
+        case true {
+            Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+            Update the <state: mode> with "gameover".
+            Update the <state: result> with "You won!".
+            Store the <state> into the <ui-state-repository>.
+        }
+        case false {
+            (* Trigger re-render *)
+            Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+            Store the <state> into the <ui-state-repository>.
+        }
+    }
+
+    Return an <OK: status> for the <win-check>.
+}

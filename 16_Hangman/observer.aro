@@ -1,0 +1,117 @@
+(* ============================================================
+   observer.aro - Render hangman display on state change
+   ============================================================ *)
+
+(Dispatch Render: ui-state-repository Observer) {
+    Extract the <state: UIState> from the <event: newValue>.
+    Extract the <wrong> from the <state: wrong>.
+    Extract the <mode> from the <state: mode>.
+    Extract the <result> from the <state: result>.
+
+    Compute the <sep-width> from (<terminal: columns>).
+    Compute the <separator> from "─" * <sep-width>.
+
+    (* Build hangman body parts based on wrong count *)
+    Compute the <has-head> from <wrong> >= 1.
+    match <has-head> { case true { Create the <head> with "O". } case false { Create the <head> with " ". } }
+
+    Compute the <has-torso> from <wrong> >= 2.
+    match <has-torso> { case true { Create the <torso> with "│". } case false { Create the <torso> with " ". } }
+
+    Compute the <has-larm> from <wrong> >= 3.
+    match <has-larm> { case true { Create the <larm> with "/". } case false { Create the <larm> with " ". } }
+
+    Compute the <has-rarm> from <wrong> >= 4.
+    match <has-rarm> { case true { Create the <rarm> with "\\". } case false { Create the <rarm> with " ". } }
+
+    Compute the <has-lleg> from <wrong> >= 5.
+    match <has-lleg> { case true { Create the <lleg> with "/". } case false { Create the <lleg> with " ". } }
+
+    Compute the <has-rleg> from <wrong> >= 6.
+    match <has-rleg> { case true { Create the <rleg> with "\\". } case false { Create the <rleg> with " ". } }
+
+    (* Build revealed word: iterate letters, check if char is in guessed string *)
+    Retrieve the <game> from the <game-repository> where <key> is "game".
+    Extract the <guessed> from the <game: guessed>.
+
+    Delete the <old-dw> from the <display-repository>.
+    Create the <dw-init> with { key: "dw", text: "" }.
+    Store the <dw-init> into the <display-repository>.
+
+    Retrieve the <all-letters> from the <letter-repository>.
+    for each <letter> in <all-letters> {
+        Compute the <revealed> from <guessed> contains (<letter: ch>).
+        Retrieve the <dw> from the <display-repository> where <key> is "dw".
+        Extract the <cur-text> from the <dw: text>.
+        match <revealed> {
+            case true  { Compute the <new-text> from <cur-text> ++ (<letter: ch>) ++ " ". }
+            case false { Compute the <new-text> from <cur-text> ++ "_ ". }
+        }
+        Update the <dw: text> with <new-text>.
+        Store the <dw> into the <display-repository>.
+    }
+
+    (* word-display extracted after mode match to allow gameover override *)
+
+    (* Build wrong letters display *)
+    Delete the <old-wl> from the <wrongl-repository>.
+    Create the <wl-init> with { key: "wl", text: "" }.
+    Store the <wl-init> into the <wrongl-repository>.
+
+    Retrieve the <secret> from the <config-repository> where <key> is "secret".
+    Extract the <word> from the <secret: word>.
+
+    Create the <all-alpha> with ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","r","s","t","u","v","w","x","y","z"].
+    for each <ch> in <all-alpha> {
+        Compute the <was-guessed> from <guessed> contains <ch>.
+        match <was-guessed> {
+            case true {
+                Compute the <found-word> from <word> contains <ch>.
+                match <found-word> {
+                    case false {
+                        Retrieve the <wl> from the <wrongl-repository> where <key> is "wl".
+                        Extract the <wl-text> from the <wl: text>.
+                        Compute the <new-wl> from <wl-text> ++ <ch> ++ " ".
+                        Update the <wl: text> with <new-wl>.
+                        Store the <wl> into the <wrongl-repository>.
+                    }
+                    case true { }
+                }
+            }
+            case false { }
+        }
+    }
+
+    Retrieve the <wl-final> from the <wrongl-repository> where <key> is "wl".
+    Extract the <wrong-display> from the <wl-final: text>.
+
+    Create the <lives> with 6.
+    Compute the <remaining> from <lives> - <wrong>.
+
+    Create the <style> with { separatorLine: <separator> }.
+
+    (* Build mode-dependent lines *)
+    match <mode> {
+        case "play" {
+            Create the <hint-line> with "type a letter · q quit".
+            Compute the <info-line> from "Wrong: " ++ <wrong-display> ++ "  Lives: " ++ <remaining>.
+        }
+        case "gameover" {
+            Create the <hint-line> with "q quit".
+            Extract the <full-word> from the <secret: word>.
+            (* Overwrite the display-repository so word-display picks it up *)
+            Retrieve the <dw-ov> from the <display-repository> where <key> is "dw".
+            Update the <dw-ov: text> with <full-word>.
+            Store the <dw-ov> into the <display-repository>.
+            Compute the <info-line> from <result>.
+        }
+    }
+
+    Retrieve the <dw-final> from the <display-repository> where <key> is "dw".
+    Extract the <word-display> from the <dw-final: text>.
+
+    Transform the <display> from the <template: play.screen>.
+    Render the <display> to the <console>.
+
+    Return an <OK: status> for the <render>.
+}
