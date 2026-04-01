@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/4_Palindrome
+aro run ./Examples/04_Palindrome
 ```

@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/6_Factorial
+aro run ./Examples/06_Factorial
 ```

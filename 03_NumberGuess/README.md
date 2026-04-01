@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/3_NumberGuess
+aro run ./Examples/03_NumberGuess
 ```

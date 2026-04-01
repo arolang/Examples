@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/7_WordCounter
+aro run ./Examples/07_WordCounter
 ```

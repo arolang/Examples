@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/10_MinMax
+aro run ./Examples/10_MinMax
 ```

@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/9_CountVowels
+aro run ./Examples/09_CountVowels
 ```

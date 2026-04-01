@@ -1,4 +1,4 @@
-# ExamplesExtra
+# 01_HelloWorld
 
 ## Prompt
 
@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra
+aro run ./Examples/01_HelloWorld
 ```

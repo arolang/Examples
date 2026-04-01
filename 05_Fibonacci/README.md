@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/5_Fibonacci --n 10
+aro run ./Examples/05_Fibonacci --n 10
 ```

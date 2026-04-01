@@ -7,7 +7,7 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/13_TicTacToe
+aro run ./Examples/13_TicTacToe
 ```
 
 ## Keys

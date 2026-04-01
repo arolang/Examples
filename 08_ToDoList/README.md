@@ -7,7 +7,7 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/8_ToDoList
+aro run ./Examples/08_ToDoList
 ```
 
 ## Keys

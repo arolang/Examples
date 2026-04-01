@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/kris/Projects/ARO/Examples/16_Hangman/Plugins/plugin-swift-collection/Sources/libplugin-swift-collection.dylib'
+relocations:     []
+...

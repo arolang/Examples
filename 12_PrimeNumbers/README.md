@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/12_PrimeNumbers
+aro run ./Examples/12_PrimeNumbers
 ```

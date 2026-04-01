@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/11_Leap
+aro run ./Examples/11_Leap
 ```

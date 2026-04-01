@@ -7,5 +7,5 @@
 ## Run
 
 ```bash
-aro run ./ExamplesExtra/2_Modulo
+aro run ./Examples/02_Modulo
 ```
