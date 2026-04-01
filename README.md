@@ -1,6 +1,6 @@
 # ARO Examples
 
-A collection of example programs demonstrating ARO language features, from basic output to interactive terminal applications.
+A collection of example programs demonstrating [ARO language](https://arolang.github.io/aro/) features, from basic output to interactive terminal applications.
 
 ## Examples
 
