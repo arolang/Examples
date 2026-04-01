@@ -1,0 +1,23 @@
+(* Log Pi estimation at milestones *)
+
+(Log Progress: state-repository Observer) {
+    Extract the <state> from the <event: newValue>.
+    Extract the <step> from the <state: step>.
+    Extract the <sum> from the <state: sum>.
+
+    Retrieve the <cfg> from the <config-repository> where <key> is "cfg".
+    Extract the <terms> from the <cfg: terms>.
+
+    (* Log at every 100000 steps *)
+    Compute the <mod> from <step> % 100000.
+    Compute the <milestone> from (<mod> == 0) AND (<step> > 0).
+    match <milestone> {
+        case true {
+            Compute the <pi-est> from <sum> * 4.0.
+            Log "  Step " ++ <step> ++ "/" ++ <terms> ++ ": Pi ≈ " ++ <pi-est> to the <console>.
+        }
+        case false { }
+    }
+
+    Return an <OK: status> for the <progress>.
+}
