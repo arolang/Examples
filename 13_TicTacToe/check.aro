@@ -1,0 +1,64 @@
+(* ============================================================
+   check.aro - Win/draw detection after each move
+   ============================================================ *)
+
+(Check Result: CheckResult Handler) {
+    Extract the <player> from the <event: player>.
+
+    Delete the <old-ws> from the <win-repository>.
+    Create the <win-init> with { key: "ws", won: false }.
+    Store the <win-init> into the <win-repository>.
+
+    (* Check all 8 lines for three-in-a-row *)
+    Retrieve the <lines> from the <line-repository>.
+    for each <line> in <lines> {
+        Retrieve the <ws> from the <win-repository> where <key> is "ws".
+        Extract the <already-won> from the <ws: won>.
+        match <already-won> {
+            case false {
+                Retrieve the <ca: Cell> from the <cell-repository> where <key> = (<line: a>).
+                Retrieve the <cb: Cell> from the <cell-repository> where <key> = (<line: b>).
+                Retrieve the <cc: Cell> from the <cell-repository> where <key> = (<line: c>).
+                Compute the <three> from ((<ca: val>) == <player>) AND ((<cb: val>) == <player>) AND ((<cc: val>) == <player>).
+                match <three> {
+                    case true { Update the <ws: won> with true. Store the <ws> into the <win-repository>. }
+                    case false { }
+                }
+            }
+            case true { }
+        }
+    }
+
+    Retrieve the <ws-final> from the <win-repository> where <key> is "ws".
+    Extract the <won> from the <ws-final: won>.
+
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+
+    match <won> {
+        case true {
+            Compute the <msg> from <player> ++ " wins!".
+            Update the <state: result> with <msg>.
+            Update the <state: mode> with "gameover".
+            Store the <state> into the <ui-state-repository>.
+        }
+        case false {
+            Compute the <draw> from (<state: turns>) >= 9.
+            match <draw> {
+                case true {
+                    Update the <state: result> with "Draw!".
+                    Update the <state: mode> with "gameover".
+                    Store the <state> into the <ui-state-repository>.
+                }
+                case false {
+                    Compute the <x-moved> from <player> == "X".
+                    match <x-moved> {
+                        case true { Emit a <ComputerTurn: event> with "go". }
+                        case false { }
+                    }
+                }
+            }
+        }
+    }
+
+    Return an <OK: status> for the <check>.
+}

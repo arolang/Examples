@@ -1,0 +1,22 @@
+(* Fibonacci - Print the first n Fibonacci numbers *)
+
+(Application-Start: Fibonacci) {
+    Extract the <n> from the <parameter: n>.
+    Compute the <count: int> from the <n>.
+
+    Log "Fibonacci sequence (" ++ <count> ++ " numbers):" to the <console>.
+
+    Create the <a> with 0.
+    Create the <b> with 1.
+    Create the <i> with 0.
+
+    while <i> < <count> {
+        Log <a> to the <console>.
+        Compute the <next> from <a> + <b>.
+        Create the <a> with <b>.
+        Create the <b> with <next>.
+        Compute the <i> from <i> + 1.
+    }
+
+    Return an <OK: status> for the <application>.
+}

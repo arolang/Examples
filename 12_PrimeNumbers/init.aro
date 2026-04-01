@@ -1,0 +1,14 @@
+(* Populate the sieve repository with entries 2..limit *)
+
+(Populate Sieve: InitSieve Handler) {
+    Extract the <limit> from the <event: limit>.
+
+    for <n> from 2 to <limit> {
+        Create the <entry: SieveEntry> with { key: <n>, prime: true }.
+        Store the <entry> into the <sieve-repository>.
+    }
+
+    Emit a <RunSieve: event> with { limit: <limit> }.
+
+    Return an <OK: status> for the <init>.
+}

@@ -1,0 +1,17 @@
+(* Factorial - Compute n! *)
+
+(Application-Start: Factorial) {
+    Create the <n> with 10.
+
+    Create the <result> with 1.
+    Create the <i> with 1.
+
+    while <i> <= <n> {
+        Compute the <result> from <result> * <i>.
+        Compute the <i> from <i> + 1.
+    }
+
+    Log <n> ++ "! = " ++ <result> to the <console>.
+
+    Return an <OK: status> for the <application>.
+}

@@ -1,0 +1,44 @@
+(* MinMax - Find the minimum and maximum from a list of numbers *)
+
+(Application-Start: Min Max) {
+    Create the <input> with "38 7 91 4 56 23 81 12 65 3".
+    Log "Input: " ++ <input> to the <console>.
+
+    Split the <parts> from the <input> by /\s+/.
+
+    Create the <state-init> with { key: "mm", min: 999999999, max: -999999999 }.
+    Store the <state-init> into the <state-repository>.
+
+    for each <part> in <parts> {
+        Compute the <num: int> from the <part>.
+        Retrieve the <state> from the <state-repository> where <key> is "mm".
+        Extract the <cur-min> from the <state: min>.
+        Extract the <cur-max> from the <state: max>.
+
+        Compute the <less-than-min> from <num> < <cur-min>.
+        match <less-than-min> {
+            case true {
+                Update the <state: min> with <num>.
+                Store the <state> into the <state-repository>.
+            }
+            case false { }
+        }
+
+        Compute the <greater-than-max> from <num> > <cur-max>.
+        match <greater-than-max> {
+            case true {
+                Update the <state: max> with <num>.
+                Store the <state> into the <state-repository>.
+            }
+            case false { }
+        }
+    }
+
+    Retrieve the <result> from the <state-repository> where <key> is "mm".
+    Extract the <min-val> from the <result: min>.
+    Extract the <max-val> from the <result: max>.
+    Log "Min: " ++ <min-val> to the <console>.
+    Log "Max: " ++ <max-val> to the <console>.
+
+    Return an <OK: status> for the <application>.
+}

@@ -1,0 +1,137 @@
+(* ============================================================
+   handlers.aro - Keyboard dispatch and game input
+   Each key+mode combination gets its own small handler
+   ============================================================ *)
+
+(Dispatch Key: KeyPress Handler) {
+    Extract the <pressed-key> from the <event: key>.
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Emit a <KeyDispatched: event> with { key: <pressed-key>, mode: <state: mode> }.
+    Return an <OK: status> for the <dispatch>.
+}
+
+(* ── Play mode: navigation ── *)
+
+(Move Up: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "up") {
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Compute the <new-pos> from (<state: cursor>) - 3.
+    Compute the <valid> from <new-pos> >= 0.
+    match <valid> {
+        case true { Update the <state: cursor> with <new-pos>. Store the <state> into the <ui-state-repository>. }
+        case false { }
+    }
+    Return an <OK: status> for the <move>.
+}
+
+(Move Down: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "down") {
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Compute the <new-pos> from (<state: cursor>) + 3.
+    Compute the <valid> from <new-pos> <= 8.
+    match <valid> {
+        case true { Update the <state: cursor> with <new-pos>. Store the <state> into the <ui-state-repository>. }
+        case false { }
+    }
+    Return an <OK: status> for the <move>.
+}
+
+(Move Left: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "left") {
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Compute the <new-pos> from (<state: cursor>) - 1.
+    Compute the <valid> from <new-pos> >= 0.
+    match <valid> {
+        case true { Update the <state: cursor> with <new-pos>. Store the <state> into the <ui-state-repository>. }
+        case false { }
+    }
+    Return an <OK: status> for the <move>.
+}
+
+(Move Right: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "right") {
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Compute the <new-pos> from (<state: cursor>) + 1.
+    Compute the <valid> from <new-pos> <= 8.
+    match <valid> {
+        case true { Update the <state: cursor> with <new-pos>. Store the <state> into the <ui-state-repository>. }
+        case false { }
+    }
+    Return an <OK: status> for the <move>.
+}
+
+(* ── Play mode: place X ── *)
+
+(Place Mark: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "enter") {
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Retrieve the <cell: Cell> from the <cell-repository> where <key> = (<state: cursor>).
+    Compute the <cell-free> from (<cell: val>) == "".
+    match <cell-free> {
+        case true {
+            Update the <cell: val> with "X".
+            Store the <cell> into the <cell-repository>.
+            Compute the <new-turns> from (<state: turns>) + 1.
+            Update the <state: turns> with <new-turns>.
+            Store the <state> into the <ui-state-repository>.
+            Emit a <CheckResult: event> with { player: "X" }.
+        }
+        case false { }
+    }
+    Return an <OK: status> for the <place>.
+}
+
+(* ── Play mode: restart ── *)
+
+(Restart Play: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "r") {
+    Emit a <ResetGame: event> with "reset".
+    Return an <OK: status> for the <restart>.
+}
+
+(* ── Play mode: quit ── *)
+
+(Quit Play: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "escape") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(Quit Play Q: KeyDispatched Handler) where (<event: mode> == "play") AND (<event: key> == "q") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(* ── Game over mode ── *)
+
+(Restart Over: KeyDispatched Handler) where (<event: mode> == "gameover") AND (<event: key> == "r") {
+    Emit a <ResetGame: event> with "reset".
+    Return an <OK: status> for the <restart>.
+}
+
+(Quit Over: KeyDispatched Handler) where (<event: mode> == "gameover") AND (<event: key> == "escape") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(Quit Over Q: KeyDispatched Handler) where (<event: mode> == "gameover") AND (<event: key> == "q") {
+    Stop the <keyboard> with <application>.
+    Return an <OK: status> for the <quit>.
+}
+
+(* ── Reset game ── *)
+
+(Reset Board: ResetGame Handler) {
+    (* Clear scratch repositories *)
+    Delete the <old-ai> from the <ai-repository>.
+    Delete the <old-ws> from the <win-repository>.
+
+    (* Reset all cells first *)
+    Delete the <old-cells> from the <cell-repository>.
+    for <i> from 0 to 9 {
+        Create the <cell: Cell> with { key: <i>, val: "" }.
+        Store the <cell> into the <cell-repository>.
+    }
+
+    (* Reset UI state last — this triggers the observer *)
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+    Update the <state: mode> with "play".
+    Update the <state: cursor> with 4.
+    Update the <state: turns> with 0.
+    Update the <state: result> with "".
+    Store the <state> into the <ui-state-repository>.
+    Return an <OK: status> for the <reset>.
+}

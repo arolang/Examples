@@ -1,0 +1,90 @@
+(* RomanNumeralConverter - Convert integers to Roman numerals *)
+
+(Application-Start: Roman Numerals) {
+    (* Store value/symbol mappings in order from largest to smallest *)
+    Create the <m0>  with { key: 0,  val: 1000, sym: "M" }.
+    Create the <m1>  with { key: 1,  val: 900,  sym: "CM" }.
+    Create the <m2>  with { key: 2,  val: 500,  sym: "D" }.
+    Create the <m3>  with { key: 3,  val: 400,  sym: "CD" }.
+    Create the <m4>  with { key: 4,  val: 100,  sym: "C" }.
+    Create the <m5>  with { key: 5,  val: 90,   sym: "XC" }.
+    Create the <m6>  with { key: 6,  val: 50,   sym: "L" }.
+    Create the <m7>  with { key: 7,  val: 40,   sym: "XL" }.
+    Create the <m8>  with { key: 8,  val: 10,   sym: "X" }.
+    Create the <m9>  with { key: 9,  val: 9,    sym: "IX" }.
+    Create the <m10> with { key: 10, val: 5,    sym: "V" }.
+    Create the <m11> with { key: 11, val: 4,    sym: "IV" }.
+    Create the <m12> with { key: 12, val: 1,    sym: "I" }.
+    Store the <m0>  into the <mapping-repository>.
+    Store the <m1>  into the <mapping-repository>.
+    Store the <m2>  into the <mapping-repository>.
+    Store the <m3>  into the <mapping-repository>.
+    Store the <m4>  into the <mapping-repository>.
+    Store the <m5>  into the <mapping-repository>.
+    Store the <m6>  into the <mapping-repository>.
+    Store the <m7>  into the <mapping-repository>.
+    Store the <m8>  into the <mapping-repository>.
+    Store the <m9>  into the <mapping-repository>.
+    Store the <m10> into the <mapping-repository>.
+    Store the <m11> into the <mapping-repository>.
+    Store the <m12> into the <mapping-repository>.
+
+    (* Test numbers *)
+    Create the <numbers> with [5, 39, 246, 1999, 3999].
+
+    for each <num> in <numbers> {
+        (* Reset conversion state *)
+        Delete the <old-conv> from the <conv-repository>.
+        Create the <conv> with { key: "cv", remaining: <num>, result: "" }.
+        Store the <conv> into the <conv-repository>.
+
+        (* Iterate mappings from largest to smallest *)
+        Retrieve the <mappings> from the <mapping-repository>.
+        for each <mapping> in <mappings> {
+            (* While remaining >= mapping value, append symbol *)
+            Retrieve the <cv> from the <conv-repository> where <key> is "cv".
+            Extract the <done> from the <cv: remaining>.
+            Compute the <fits> from <done> >= (<mapping: val>).
+
+            match <fits> {
+                case true {
+                    (* Use while loop for repeated subtraction *)
+                    Create the <loop-ctrl> with { key: "lc", go: true }.
+                    Store the <loop-ctrl> into the <loop-repository>.
+                    Extract the <looping> from the <loop-ctrl: go>.
+
+                    while <looping> == true {
+                        Retrieve the <cv> from the <conv-repository> where <key> is "cv".
+                        Compute the <still-fits> from (<cv: remaining>) >= (<mapping: val>).
+                        match <still-fits> {
+                            case true {
+                                Compute the <new-remaining> from (<cv: remaining>) - (<mapping: val>).
+                                Compute the <new-result> from (<cv: result>) ++ (<mapping: sym>).
+                                Update the <cv: remaining> with <new-remaining>.
+                                Update the <cv: result> with <new-result>.
+                                Store the <cv> into the <conv-repository>.
+                            }
+                            case false {
+                                Retrieve the <lc> from the <loop-repository> where <key> is "lc".
+                                Update the <lc: go> with false.
+                                Store the <lc> into the <loop-repository>.
+                            }
+                        }
+                        Retrieve the <lc> from the <loop-repository> where <key> is "lc".
+                        Extract the <looping> from the <lc: go>.
+                    }
+
+                    (* Reset loop ctrl for next mapping *)
+                    Delete the <old-lc> from the <loop-repository>.
+                }
+                case false { }
+            }
+        }
+
+        Retrieve the <final> from the <conv-repository> where <key> is "cv".
+        Extract the <roman> from the <final: result>.
+        Log <num> ++ " -> " ++ <roman> to the <console>.
+    }
+
+    Return an <OK: status> for the <application>.
+}

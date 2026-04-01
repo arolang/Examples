@@ -1,0 +1,65 @@
+(* ============================================================
+   observer.aro - Render UI on every state change
+   Dispatch: observer emits Render event, mode-specific handlers render
+   ============================================================ *)
+
+(Dispatch Render: ui-state-repository Observer) {
+    Extract the <state> from the <event: newValue>.
+    Extract the <mode> from the <state: mode>.
+    Compute the <sep-width> from (<terminal: columns>).
+    Compute the <separator> from "─" * <sep-width>.
+    Compute the <input-width> from (<terminal: columns>) - 4.
+    Create the <style> with { separatorLine: <separator>, inputWidth: <input-width> }.
+    Emit a <Render: event> with { mode: <mode>, style: <style> }.
+    Return an <OK: status> for the <dispatch>.
+}
+
+(* ── List view ── *)
+
+(Render List: Render Handler) where <event: mode> == "list" {
+    Retrieve the <state> from the <ui-state-repository> where <key> is "main".
+    Extract the <style> from the <event: style>.
+    Extract the <total-tasks> from the <state: totalTasks>.
+    Extract the <selection> from the <state: selection>.
+
+    Compute the <has-tasks> from <total-tasks> > 0.
+    match <has-tasks> {
+        case true {
+            Delete the <old-slots> from the <slot-repository>.
+
+            for <slot-index> from 0 to <total-tasks> {
+                Retrieve the <task> from the <task-repository> where <key> = <slot-index>.
+                Compute the <selected> from <slot-index> == <selection>.
+                match <selected> {
+                    case true  { Create the <marker> with "▶". }
+                    case false { Create the <marker> with " ". }
+                }
+                Compute the <display-idx> from <slot-index> + 1.
+                Create the <slot> with { key: <slot-index>, marker: <marker>, idx: <display-idx>, title: <task: title> }.
+                Store the <slot> into the <slot-repository>.
+            }
+
+            Retrieve the <slots> from the <slot-repository>.
+            Transform the <display> from the <template: list.screen>.
+            Render the <display> to the <console>.
+        }
+        case false {
+            Transform the <display> from the <template: no-tasks.screen>.
+            Render the <display> to the <console>.
+        }
+    }
+
+    Return an <OK: status> for the <render>.
+}
+
+(* ── Add view ── *)
+
+(Render Add: Render Handler) where <event: mode> == "add" {
+    Retrieve the <state> from the <ui-state-repository> where <key> is "main".
+    Extract the <style> from the <event: style>.
+    Extract the <input-text> from the <state: inputText>.
+    Compute the <visible-text: clip> from <input-text> with <style: inputWidth>.
+    Transform the <display> from the <template: add.screen>.
+    Render the <display> to the <console>.
+    Return an <OK: status> for the <render>.
+}

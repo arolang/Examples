@@ -1,0 +1,141 @@
+(* ============================================================
+   observer.aro - Render board on every state change
+   ============================================================ *)
+
+(Dispatch Render: ui-state-repository Observer) {
+    Extract the <state: UIState> from the <event: newValue>.
+    Compute the <sep-width> from (<terminal: columns>).
+    Compute the <separator> from "─" * <sep-width>.
+    Create the <style> with { separatorLine: <separator> }.
+    Emit a <RenderBoard: event> with { mode: <state: mode>, style: <style> }.
+    Return an <OK: status> for the <dispatch>.
+}
+
+(* ── Render play mode ── *)
+
+(Render Play: RenderBoard Handler) where <event: mode> == "play" {
+    Extract the <style> from the <event: style>.
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+
+    (* Build display for each cell *)
+    Retrieve the <c0: Cell> from the <cell-repository> where <key> = 0.
+    Retrieve the <c1: Cell> from the <cell-repository> where <key> = 1.
+    Retrieve the <c2: Cell> from the <cell-repository> where <key> = 2.
+    Retrieve the <c3: Cell> from the <cell-repository> where <key> = 3.
+    Retrieve the <c4: Cell> from the <cell-repository> where <key> = 4.
+    Retrieve the <c5: Cell> from the <cell-repository> where <key> = 5.
+    Retrieve the <c6: Cell> from the <cell-repository> where <key> = 6.
+    Retrieve the <c7: Cell> from the <cell-repository> where <key> = 7.
+    Retrieve the <c8: Cell> from the <cell-repository> where <key> = 8.
+
+    (* Format each cell: X=bold, O=bold, cursor=highlighted dot, blank=space *)
+    Emit a <FormatCells: event> with {
+        cursor: <state: cursor>,
+        v0: <c0: val>, v1: <c1: val>, v2: <c2: val>,
+        v3: <c3: val>, v4: <c4: val>, v5: <c5: val>,
+        v6: <c6: val>, v7: <c7: val>, v8: <c8: val>,
+        mode: "play", style: <style>, turns: <state: turns>, result: ""
+    }.
+
+    Return an <OK: status> for the <render>.
+}
+
+(* ── Render gameover mode ── *)
+
+(Render Over: RenderBoard Handler) where <event: mode> == "gameover" {
+    Extract the <style> from the <event: style>.
+    Retrieve the <state: UIState> from the <ui-state-repository> where <key> is "main".
+
+    Retrieve the <c0: Cell> from the <cell-repository> where <key> = 0.
+    Retrieve the <c1: Cell> from the <cell-repository> where <key> = 1.
+    Retrieve the <c2: Cell> from the <cell-repository> where <key> = 2.
+    Retrieve the <c3: Cell> from the <cell-repository> where <key> = 3.
+    Retrieve the <c4: Cell> from the <cell-repository> where <key> = 4.
+    Retrieve the <c5: Cell> from the <cell-repository> where <key> = 5.
+    Retrieve the <c6: Cell> from the <cell-repository> where <key> = 6.
+    Retrieve the <c7: Cell> from the <cell-repository> where <key> = 7.
+    Retrieve the <c8: Cell> from the <cell-repository> where <key> = 8.
+
+    Emit a <FormatCells: event> with {
+        cursor: -1,
+        v0: <c0: val>, v1: <c1: val>, v2: <c2: val>,
+        v3: <c3: val>, v4: <c4: val>, v5: <c5: val>,
+        v6: <c6: val>, v7: <c7: val>, v8: <c8: val>,
+        mode: "gameover", style: <style>, turns: <state: turns>, result: <state: result>
+    }.
+
+    Return an <OK: status> for the <render>.
+}
+
+(* ── Format cells and render template ── *)
+
+(Format Display: FormatCells Handler) {
+    Extract the <cursor> from the <event: cursor>.
+    Extract the <mode> from the <event: mode>.
+    Extract the <style> from the <event: style>.
+    Extract the <turns> from the <event: turns>.
+    Extract the <result> from the <event: result>.
+
+    (* Cell values *)
+    Extract the <v0> from the <event: v0>.
+    Extract the <v1> from the <event: v1>.
+    Extract the <v2> from the <event: v2>.
+    Extract the <v3> from the <event: v3>.
+    Extract the <v4> from the <event: v4>.
+    Extract the <v5> from the <event: v5>.
+    Extract the <v6> from the <event: v6>.
+    Extract the <v7> from the <event: v7>.
+    Extract the <v8> from the <event: v8>.
+
+    (* Format each cell *)
+    Create the <positions> with [<v0>, <v1>, <v2>, <v3>, <v4>, <v5>, <v6>, <v7>, <v8>].
+
+    (* Cell 0 *)
+    Compute the <cur0> from <cursor> == 0. Compute the <has0> from <v0> != "".
+    match <has0> { case true { Create the <s0> with <v0>. } case false { match <cur0> { case true { Create the <s0> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s0> with " ". } } } }
+
+    (* Cell 1 *)
+    Compute the <cur1> from <cursor> == 1. Compute the <has1> from <v1> != "".
+    match <has1> { case true { Create the <s1> with <v1>. } case false { match <cur1> { case true { Create the <s1> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s1> with " ". } } } }
+
+    (* Cell 2 *)
+    Compute the <cur2> from <cursor> == 2. Compute the <has2> from <v2> != "".
+    match <has2> { case true { Create the <s2> with <v2>. } case false { match <cur2> { case true { Create the <s2> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s2> with " ". } } } }
+
+    (* Cell 3 *)
+    Compute the <cur3> from <cursor> == 3. Compute the <has3> from <v3> != "".
+    match <has3> { case true { Create the <s3> with <v3>. } case false { match <cur3> { case true { Create the <s3> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s3> with " ". } } } }
+
+    (* Cell 4 *)
+    Compute the <cur4> from <cursor> == 4. Compute the <has4> from <v4> != "".
+    match <has4> { case true { Create the <s4> with <v4>. } case false { match <cur4> { case true { Create the <s4> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s4> with " ". } } } }
+
+    (* Cell 5 *)
+    Compute the <cur5> from <cursor> == 5. Compute the <has5> from <v5> != "".
+    match <has5> { case true { Create the <s5> with <v5>. } case false { match <cur5> { case true { Create the <s5> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s5> with " ". } } } }
+
+    (* Cell 6 *)
+    Compute the <cur6> from <cursor> == 6. Compute the <has6> from <v6> != "".
+    match <has6> { case true { Create the <s6> with <v6>. } case false { match <cur6> { case true { Create the <s6> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s6> with " ". } } } }
+
+    (* Cell 7 *)
+    Compute the <cur7> from <cursor> == 7. Compute the <has7> from <v7> != "".
+    match <has7> { case true { Create the <s7> with <v7>. } case false { match <cur7> { case true { Create the <s7> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s7> with " ". } } } }
+
+    (* Cell 8 *)
+    Compute the <cur8> from <cursor> == 8. Compute the <has8> from <v8> != "".
+    match <has8> { case true { Create the <s8> with <v8>. } case false { match <cur8> { case true { Create the <s8> with "\u{001B}[7m \u{001B}[0m". } case false { Create the <s8> with " ". } } } }
+
+    match <mode> {
+        case "play" {
+            Transform the <display> from the <template: board.screen>.
+            Render the <display> to the <console>.
+        }
+        case "gameover" {
+            Transform the <display> from the <template: gameover.screen>.
+            Render the <display> to the <console>.
+        }
+    }
+
+    Return an <OK: status> for the <format>.
+}

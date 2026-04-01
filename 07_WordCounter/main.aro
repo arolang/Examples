@@ -1,0 +1,13 @@
+(* WordCounter - Count the words in a string *)
+
+(Application-Start: Word Counter) {
+    Create the <text> with "The quick brown fox jumps over the lazy dog".
+    Log "Text: " ++ <text> to the <console>.
+
+    Split the <words> from the <text> by /\s+/.
+    Compute the <word-count: count> from the <words>.
+
+    Log "Word count: " ++ <word-count> to the <console>.
+
+    Return an <OK: status> for the <application>.
+}

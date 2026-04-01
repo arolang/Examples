@@ -1,0 +1,68 @@
+(* Leap - Print the next 20 leap years *)
+
+(Application-Start: Leap Years) {
+    Extract the <current-year> from the <now: year>.
+    Log "Next 20 leap years:" to the <console>.
+
+    Create the <state-init> with { key: "lp", year: <current-year>, found: 0, done: false }.
+    Store the <state-init> into the <state-repository>.
+
+    Retrieve the <ctrl> from the <state-repository> where <key> is "lp".
+    Extract the <done> from the <ctrl: done>.
+
+    while <done> == false {
+        Retrieve the <state> from the <state-repository> where <key> is "lp".
+        Extract the <year> from the <state: year>.
+        Extract the <found> from the <state: found>.
+
+        Compute the <mod4> from <year> % 4.
+        Compute the <mod100> from <year> % 100.
+        Compute the <mod400> from <year> % 400.
+
+        Compute the <divisible4> from <mod4> == 0.
+        Compute the <divisible100> from <mod100> == 0.
+        Compute the <divisible400> from <mod400> == 0.
+
+        (* Leap year: divisible by 4, but not 100, unless also 400 *)
+        match <divisible4> {
+            case true {
+                match <divisible100> {
+                    case true {
+                        match <divisible400> {
+                            case true {
+                                Log <year> to the <console>.
+                                Compute the <new-found> from <found> + 1.
+                                Update the <state: found> with <new-found>.
+                                Compute the <reached> from <new-found> >= 20.
+                                match <reached> {
+                                    case true { Update the <state: done> with true. }
+                                    case false { }
+                                }
+                            }
+                            case false { }
+                        }
+                    }
+                    case false {
+                        Log <year> to the <console>.
+                        Compute the <new-found> from <found> + 1.
+                        Update the <state: found> with <new-found>.
+                        Compute the <reached> from <new-found> >= 20.
+                        match <reached> {
+                            case true { Update the <state: done> with true. }
+                            case false { }
+                        }
+                    }
+                }
+            }
+            case false { }
+        }
+
+        Compute the <next-year> from <year> + 1.
+        Update the <state: year> with <next-year>.
+        Store the <state> into the <state-repository>.
+
+        Extract the <done> from the <state: done>.
+    }
+
+    Return an <OK: status> for the <application>.
+}

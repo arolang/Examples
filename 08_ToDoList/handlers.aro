@@ -1,0 +1,176 @@
+(* ============================================================
+   handlers.aro - Keyboard event handling
+   Dispatch pattern: KeyPress → KeyDispatched with mode
+   ============================================================ *)
+
+(* ---- Dispatch: extract key + mode, emit KeyDispatched ---- *)
+
+(Dispatch Key: KeyPress Handler) {
+    Extract the <pressed-key> from the <event: key>.
+    Retrieve the <state> from the <ui-state-repository> where <key> is "main".
+    Extract the <mode> from the <state: mode>.
+    Emit a <KeyDispatched: event> with { key: <pressed-key>, mode: <mode> }.
+    Return an <OK: status> for the <dispatch>.
+}
+
+(* ════════════════════════════════════════
+   LIST MODE - browse / delete / switch to add
+   ════════════════════════════════════════ *)
+
+(Handle List Key: KeyDispatched Handler) where <event: mode> == "list" {
+    Extract the <pressed-key> from the <event: key>.
+    Retrieve the <state> from the <ui-state-repository> where <key> is "main".
+
+    match <pressed-key> {
+        case "escape" {
+            Stop the <keyboard> with <application>.
+        }
+        case "q" {
+            Stop the <keyboard> with <application>.
+        }
+        case "up" {
+            Compute the <moved-up> from (<state: selection>) - 1.
+            Compute the <can-move-up> from <moved-up> >= 0.
+            match <can-move-up> {
+                case true {
+                    Update the <state: selection> with <moved-up>.
+                    Store the <state> into the <ui-state-repository>.
+                }
+                case false { }
+            }
+        }
+        case "down" {
+            Compute the <moved-down> from (<state: selection>) + 1.
+            Compute the <can-move-down> from <moved-down> < (<state: totalTasks>).
+            match <can-move-down> {
+                case true {
+                    Update the <state: selection> with <moved-down>.
+                    Store the <state> into the <ui-state-repository>.
+                }
+                case false { }
+            }
+        }
+        case "a" {
+            Update the <state: mode> with "add".
+            Update the <state: inputText> with "".
+            Store the <state> into the <ui-state-repository>.
+        }
+        case "d" {
+            Compute the <has-tasks> from (<state: totalTasks>) > 0.
+            match <has-tasks> {
+                case true {
+                    Extract the <sel> from the <state: selection>.
+                    Delete the <task> from the <task-repository> where <key> = <sel>.
+
+                    Retrieve the <remaining> from the <task-repository>.
+                    Compute the <new-total: count> from the <remaining>.
+
+                    (* Rebuild repository with sequential keys *)
+                    Delete the <cleared> from the <task-repository>.
+
+                    Create the <ri-init> with { key: "ri", val: 0 }.
+                    Store the <ri-init> into the <reindex-repository>.
+                    for each <item> in <remaining> {
+                        Retrieve the <ri-ctr> from the <reindex-repository> where <key> is "ri".
+                        Extract the <ri-idx> from the <ri-ctr: val>.
+                        Create the <reindexed> with { key: <ri-idx>, title: <item: title> }.
+                        Store the <reindexed> into the <task-repository>.
+                        Compute the <next-ri> from <ri-idx> + 1.
+                        Update the <ri-ctr: val> with <next-ri>.
+                        Store the <ri-ctr> into the <reindex-repository>.
+                    }
+
+                    Compute the <sel-past-end> from <sel> >= <new-total>.
+                    Compute the <no-tasks-left> from <new-total> == 0.
+                    match <no-tasks-left> {
+                        case true {
+                            Update the <state: selection> with 0.
+                        }
+                        case false {
+                            match <sel-past-end> {
+                                case true {
+                                    Compute the <new-sel> from <new-total> - 1.
+                                    Update the <state: selection> with <new-sel>.
+                                }
+                                case false { }
+                            }
+                        }
+                    }
+
+                    Update the <state: totalTasks> with <new-total>.
+                    Store the <state> into the <ui-state-repository>.
+                }
+                case false { }
+            }
+        }
+    }
+
+    Return an <OK: status> for the <key-handled>.
+}
+
+(* ════════════════════════════════════════
+   ADD MODE - type task title, enter confirms, escape cancels
+   ════════════════════════════════════════ *)
+
+(Handle Add Key: KeyDispatched Handler) where <event: mode> == "add" {
+    Extract the <pressed-key> from the <event: key>.
+    Retrieve the <state> from the <ui-state-repository> where <key> is "main".
+
+    match <pressed-key> {
+        case "escape" {
+            Update the <state: mode> with "list".
+            Update the <state: inputText> with "".
+            Store the <state> into the <ui-state-repository>.
+        }
+        case "enter" {
+            Compute the <text-len: length> from (<state: inputText>).
+            Compute the <has-text> from <text-len> > 0.
+            match <has-text> {
+                case true {
+                    Extract the <total> from the <state: totalTasks>.
+                    Create the <task> with { key: <total>, title: <state: inputText> }.
+                    Store the <task> into the <task-repository>.
+                    Compute the <new-total> from <total> + 1.
+                    Update the <state: totalTasks> with <new-total>.
+                    Update the <state: mode> with "list".
+                    Update the <state: inputText> with "".
+                    Compute the <new-sel> from <new-total> - 1.
+                    Update the <state: selection> with <new-sel>.
+                    Store the <state> into the <ui-state-repository>.
+                }
+                case false {
+                    Update the <state: mode> with "list".
+                    Update the <state: inputText> with "".
+                    Store the <state> into the <ui-state-repository>.
+                }
+            }
+        }
+        case "backspace" {
+            Compute the <txt-len: length> from (<state: inputText>).
+            Compute the <has-chars> from <txt-len> > 0.
+            match <has-chars> {
+                case true {
+                    Compute the <new-len> from <txt-len> - 1.
+                    Compute the <trimmed: clip> from (<state: inputText>) with <new-len>.
+                    Update the <state: inputText> with <trimmed>.
+                    Store the <state> into the <ui-state-repository>.
+                }
+                case false { }
+            }
+        }
+    }
+
+    (* Append printable character *)
+    Create the <control-keys> with ["escape", "enter", "backspace", "up", "down", "left", "right", "tab"].
+    Compute the <control-key> from <control-keys> contains <pressed-key>.
+    match <control-key> {
+        case false {
+            Compute the <new-text> from (<state: inputText>) ++ <pressed-key>.
+            Update the <state: inputText> with <new-text>.
+            Store the <state> into the <ui-state-repository>.
+        }
+        case true { }
+    }
+
+    Return an <OK: status> for the <key-handled>.
+}

@@ -1,0 +1,5 @@
+ ToDo List  ↑↓ navigate · a add · d delete · q quit
+{{ <style: separatorLine> }}
+{{ for each <slot> in <slots> { }} {{ <slot: marker> }} {{ <slot: idx> }}. {{ <slot: title> }}
+{{ } }}{{ <style: separatorLine> }}
+ {{ <total-tasks> }} task(s)

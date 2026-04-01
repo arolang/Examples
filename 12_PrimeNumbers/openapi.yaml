@@ -1,0 +1,35 @@
+openapi: 3.0.3
+info:
+  title: Prime Sieve
+  version: 1.0.0
+  description: Sieve of Eratosthenes — schema definitions for state objects
+paths: {}
+components:
+  schemas:
+    SieveCtrl:
+      type: object
+      properties:
+        key:   { type: string }
+        i:     { type: integer }
+        limit: { type: integer }
+    SieveEntry:
+      type: object
+      properties:
+        key:   { type: integer }
+        prime: { type: boolean }
+    MarkCtrl:
+      type: object
+      properties:
+        key:  { type: string }
+        j:    { type: integer }
+        done: { type: boolean }
+    Counter:
+      type: object
+      properties:
+        key: { type: string }
+        val: { type: integer }
+    LineBuffer:
+      type: object
+      properties:
+        key:  { type: string }
+        text: { type: string }

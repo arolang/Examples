@@ -1,0 +1,34 @@
+(* CountVowels - Count how many vowels are in the input text *)
+
+(Application-Start: Count Vowels) {
+    Create the <text> with "The quick brown fox jumps over the lazy dog".
+    Log "Text: " ++ <text> to the <console>.
+
+    Compute the <lower: lowercase> from the <text>.
+    Compute the <total-len: length> from the <lower>.
+
+    (* Split on vowels — parts between vowels *)
+    Split the <parts> from the <lower> by /[aeiou]/.
+
+    (* Number of vowels = total parts - 1 when split by vowels *)
+    (* But count of split parts minus joined length also works *)
+    (* vowels = total length - sum of non-vowel part lengths *)
+    Create the <non-vowel-init> with { key: "nv", val: 0 }.
+    Store the <non-vowel-init> into the <counter-repository>.
+
+    for each <part> in <parts> {
+        Compute the <part-len: length> from the <part>.
+        Retrieve the <ctr> from the <counter-repository> where <key> is "nv".
+        Extract the <cur> from the <ctr: val>.
+        Compute the <next> from <cur> + <part-len>.
+        Update the <ctr: val> with <next>.
+        Store the <ctr> into the <counter-repository>.
+    }
+
+    Retrieve the <final> from the <counter-repository> where <key> is "nv".
+    Extract the <non-vowel-len> from the <final: val>.
+    Compute the <vowel-count> from <total-len> - <non-vowel-len>.
+    Log "Vowel count: " ++ <vowel-count> to the <console>.
+
+    Return an <OK: status> for the <application>.
+}

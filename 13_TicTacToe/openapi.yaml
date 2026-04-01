@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: TicTacToe
+  version: 1.0.0
+  description: Terminal TicTacToe — schema definitions
+paths: {}
+components:
+  schemas:
+    UIState:
+      type: object
+      properties:
+        key:       { type: string }
+        mode:      { type: string }
+        cursor:    { type: integer }
+        turns:     { type: integer }
+        result:    { type: string }
+    Cell:
+      type: object
+      properties:
+        key: { type: integer }
+        val: { type: string }
+    Line:
+      type: object
+      properties:
+        key: { type: integer }
+        a:   { type: integer }
+        b:   { type: integer }
+        c:   { type: integer }
+    AIMove:
+      type: object
+      properties:
+        key:   { type: string }
+        pos:   { type: integer }
+        done:  { type: boolean }

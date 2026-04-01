@@ -1,0 +1,28 @@
+(* NumberGuess - Guess a random number with high/low hints *)
+
+(Application-Start: Number Guess) {
+    Create the <numbers> with [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].
+    Compute the <secret: collections.pick-random> from the <numbers>.
+
+    Log "I picked a number between 0 and 16. Try to guess it!" to the <console>.
+
+    Create the <found> with false.
+    while <found> == false {
+        Prompt the <input> with "Your guess: ".
+        Compute the <guess: int> from the <input>.
+
+        match <guess> {
+            case <secret> {
+                Log "Correct! You guessed it!" to the <console>.
+                Create the <found> with true.
+            }
+            otherwise {
+                Compare the <guess> against the <secret>.
+                Log "Too high!" to the <console> when <guess> > <secret>.
+                Log "Too low!" to the <console> when <guess> < <secret>.
+            }
+        }
+    }
+
+    Return an <OK: status> for the <application>.
+}

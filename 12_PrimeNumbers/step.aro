@@ -1,0 +1,58 @@
+(* Process one sieve candidate: mark multiples, advance i *)
+
+(Mark Multiples: SieveCheck Handler) where <event: pastLimit> == false {
+    Extract the <i> from the <event: i>.
+    Extract the <limit> from the <event: limit>.
+
+    Retrieve the <check: SieveEntry> from the <sieve-repository> where <key> = <i>.
+
+    match <check: prime> {
+        case true {
+            Log <i> to the <console>.
+
+            Compute the <sq> from <i> * <i>.
+            Delete the <old-mc> from the <mark-repository>.
+            Create the <mc: MarkCtrl> with { key: "mc", j: <sq>, done: false }.
+            Store the <mc> into the <mark-repository>.
+
+            Extract the <mark-done> from the <mc: done>.
+            while <mark-done> == false {
+                Retrieve the <ms: MarkCtrl> from the <mark-repository> where <key> is "mc".
+                Extract the <j> from the <ms: j>.
+                Compute the <j-past> from <j> > <limit>.
+                match <j-past> {
+                    case true {
+                        Update the <ms: done> with true.
+                        Store the <ms> into the <mark-repository>.
+                    }
+                    case false {
+                        Retrieve the <target: SieveEntry> from the <sieve-repository> where <key> = <j>.
+                        Update the <target: prime> with false.
+                        Store the <target> into the <sieve-repository>.
+                        Compute the <next-j> from <j> + <i>.
+                        Update the <ms: j> with <next-j>.
+                        Store the <ms> into the <mark-repository>.
+                    }
+                }
+                Extract the <mark-done> from the <ms: done>.
+            }
+        }
+        case false { }
+    }
+
+    (* Advance i — updating sieve-ctrl-repository triggers the observer *)
+    Compute the <next-i> from <i> + 1.
+    Retrieve the <ctrl: SieveCtrl> from the <sieve-ctrl-repository> where <key> is "sc".
+    Update the <ctrl: i> with <next-i>.
+    Store the <ctrl> into the <sieve-ctrl-repository>.
+
+    Return an <OK: status> for the <step>.
+}
+
+(* Sieve complete: emit done event *)
+
+(Sieve Complete: SieveCheck Handler) where <event: pastLimit> == true {
+    Extract the <limit> from the <event: limit>.
+    Emit a <SieveDone: event> with { limit: <limit> }.
+    Return an <OK: status> for the <done>.
+}

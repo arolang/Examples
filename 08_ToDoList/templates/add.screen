@@ -1,0 +1,6 @@
+ ToDo List  enter confirm · esc cancel
+{{ <style: separatorLine> }}
+ New Task:
+{{ <style: separatorLine> }}
+  {{ <visible-text> }}▌
+{{ <style: separatorLine> }}

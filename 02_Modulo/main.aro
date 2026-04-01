@@ -1,0 +1,20 @@
+(* Modulo - Decide whether an integer is odd or even *)
+
+(Application-Start: Modulo Demo) {
+    Create the <number> with 7.
+    Compute the <remainder> from <number> % 2.
+
+    Log "Number: " to the <console>.
+    Log <number> to the <console>.
+
+    match <remainder> {
+        case 0 {
+            Log "The number is even." to the <console>.
+        }
+        otherwise {
+            Log "The number is odd." to the <console>.
+        }
+    }
+
+    Return an <OK: status> for the <application>.
+}

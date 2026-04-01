@@ -1,0 +1,6 @@
+(* ExamplesExtra - A minimal ARO program that outputs a message *)
+
+(Application-Start: Entry Point) {
+    Log "Hello from ARO!" to the <console>.
+    Return an <OK: status> for the <application>.
+}

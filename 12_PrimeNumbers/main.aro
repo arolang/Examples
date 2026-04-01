@@ -1,0 +1,10 @@
+(* PrimeNumbers - Sieve of Eratosthenes using event pipeline *)
+
+(Application-Start: Prime Sieve) {
+    Create the <limit> with 10000.
+    Log "Sieve of Eratosthenes: primes up to " ++ <limit> to the <console>.
+
+    Emit a <InitSieve: event> with { limit: <limit> }.
+
+    Return an <OK: status> for the <startup>.
+}

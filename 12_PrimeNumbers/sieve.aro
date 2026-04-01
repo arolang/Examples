@@ -1,0 +1,10 @@
+(* Start the sieve: initialize control state in repository *)
+
+(Start Sieve: RunSieve Handler) {
+    Extract the <limit> from the <event: limit>.
+
+    Create the <ctrl: SieveCtrl> with { key: "sc", i: 2, limit: <limit> }.
+    Store the <ctrl> into the <sieve-ctrl-repository>.
+
+    Return an <OK: status> for the <sieve>.
+}

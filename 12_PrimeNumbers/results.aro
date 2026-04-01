@@ -1,0 +1,36 @@
+(* Print remaining primes above sqrt(limit) and show total count *)
+
+(Print Remaining: SieveDone Handler) {
+    Extract the <limit> from the <event: limit>.
+
+    Create the <cc: Counter> with { key: "cc", val: 0 }.
+    Store the <cc> into the <count-repository>.
+
+    for <p> from 2 to <limit> {
+        Retrieve the <pe: SieveEntry> from the <sieve-repository> where <key> = <p>.
+        match <pe: prime> {
+            case true {
+                (* Print primes that were too large for the sieve loop *)
+                Compute the <sq> from <p> * <p>.
+                Compute the <was-sieved> from <sq> <= <limit>.
+                match <was-sieved> {
+                    case true { }
+                    case false {
+                        Log <p> to the <console>.
+                    }
+                }
+
+                Retrieve the <cc: Counter> from the <count-repository> where <key> is "cc".
+                Compute the <new-cnt> from (<cc: val>) + 1.
+                Update the <cc: val> with <new-cnt>.
+                Store the <cc> into the <count-repository>.
+            }
+            case false { }
+        }
+    }
+
+    Retrieve the <final: Counter> from the <count-repository> where <key> is "cc".
+    Log "Total primes: " ++ <final: val> to the <console>.
+
+    Return an <OK: status> for the <results>.
+}

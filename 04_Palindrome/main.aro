@@ -1,0 +1,34 @@
+(* Palindrome - Check if text reads the same forwards and backwards *)
+
+(Application-Start: Palindrome Checker) {
+    Create the <text> with "A man, a plan, a canal: Panama".
+    Log "Text: " to the <console>.
+    Log <text> to the <console>.
+
+    (* Normalize: lowercase and split out only alphanumeric parts *)
+    Compute the <lower: lowercase> from the <text>.
+    Split the <parts> from the <lower> by /[^a-z0-9]+/.
+
+    (* Join parts into a single cleaned string *)
+    Create the <cleaned> with "".
+    for each <part> in <parts> {
+        Compute the <cleaned> from <cleaned> ++ <part>.
+    }
+
+    (* Reverse and compare *)
+    Compute the <reversed: collections.reverse> from the <cleaned>.
+
+    Log "Cleaned:  " ++ <cleaned> to the <console>.
+    Log "Reversed: " ++ <reversed> to the <console>.
+
+    match <cleaned> {
+        case <reversed> {
+            Log "It is a palindrome!" to the <console>.
+        }
+        otherwise {
+            Log "It is NOT a palindrome." to the <console>.
+        }
+    }
+
+    Return an <OK: status> for the <application>.
+}

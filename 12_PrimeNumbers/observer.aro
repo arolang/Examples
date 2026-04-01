@@ -1,0 +1,12 @@
+(* Observe sieve control state, compute pastLimit, dispatch *)
+
+(Dispatch Sieve: sieve-ctrl-repository Observer) {
+    Extract the <state: SieveCtrl> from the <event: newValue>.
+
+    Compute the <sq> from (<state: i>) * (<state: i>).
+    Compute the <past-limit> from <sq> > (<state: limit>).
+
+    Emit a <SieveCheck: event> with { i: <state: i>, limit: <state: limit>, pastLimit: <past-limit> }.
+
+    Return an <OK: status> for the <dispatch>.
+}

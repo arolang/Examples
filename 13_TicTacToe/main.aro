@@ -1,0 +1,43 @@
+(* TicTacToe - Terminal tic-tac-toe with unbeatable AI *)
+
+(Application-Start: TicTacToe) {
+    Clear the <screen> for the <terminal>.
+    Clear the <cursor> for the <terminal>.
+
+    (* Initialize 9 empty cells *)
+    for <i> from 0 to 9 {
+        Create the <cell: Cell> with { key: <i>, val: "" }.
+        Store the <cell> into the <cell-repository>.
+    }
+
+    (* Store the 8 winning lines *)
+    Create the <l0> with { key: 0, a: 0, b: 1, c: 2 }.
+    Create the <l1> with { key: 1, a: 3, b: 4, c: 5 }.
+    Create the <l2> with { key: 2, a: 6, b: 7, c: 8 }.
+    Create the <l3> with { key: 3, a: 0, b: 3, c: 6 }.
+    Create the <l4> with { key: 4, a: 1, b: 4, c: 7 }.
+    Create the <l5> with { key: 5, a: 2, b: 5, c: 8 }.
+    Create the <l6> with { key: 6, a: 0, b: 4, c: 8 }.
+    Create the <l7> with { key: 7, a: 2, b: 4, c: 6 }.
+    Store the <l0> into the <line-repository>.
+    Store the <l1> into the <line-repository>.
+    Store the <l2> into the <line-repository>.
+    Store the <l3> into the <line-repository>.
+    Store the <l4> into the <line-repository>.
+    Store the <l5> into the <line-repository>.
+    Store the <l6> into the <line-repository>.
+    Store the <l7> into the <line-repository>.
+
+    Create the <state: UIState> with { key: "main", mode: "play", cursor: 4, turns: 0, result: "" }.
+    Store the <state> into the <ui-state-repository>.
+
+    Listen the <keyboard> to the <stdin>.
+    Keepalive the <application> for the <events>.
+
+    Return an <OK: status> for the <startup>.
+}
+
+(Application-End: Success) {
+    Show the <cursor> for the <terminal>.
+    Clear the <screen> for the <terminal>.
+}
